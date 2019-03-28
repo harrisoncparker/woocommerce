@@ -18,6 +18,26 @@ class WC_Products_Tracking {
 		add_action( 'edit_post', array( $this, 'track_product_updated' ), 10, 2 );
 		add_action( 'transition_post_status', array( $this, 'track_product_published' ), 10, 3 );
 		add_action( 'created_product_cat', array( $this, 'track_product_category_created' ) );
+		add_action( 'load-post-new.php', array( $this, 'track_product_add_start' ), 10 );
+		add_action( 'load-post.php', array( $this, 'track_product_edit' ), 10 );
+	}
+
+	public function track_product_edit() {
+		error_log('type is: ' . get_post_type( $_GET['post']) );
+	}
+
+	public function track_product_add_start() {
+		if ( isset( $_GET['post_type'] ) && 'product' === wc_clean( wp_unslash( $_GET['post_type'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			WC_Tracks::record_event( 'product_add_start' );
+
+			wc_enqueue_js(
+					"
+				$( 'button.add_attribute' ).on( 'click', function() {
+					window.wcTracks.recordEvent( 'product_attribute_add', { source: 'edit-product' } );
+				} );
+			"
+			);
+		}
 	}
 
 	/**
