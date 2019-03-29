@@ -38,11 +38,14 @@ class WC_Products_Tracking {
 	/**
 	 * Enqueue js to send event when a new attribute is added.
 	 */
-	public function track_add_attribute_client() {
+	public function track_attributes_client() {
 		wc_enqueue_js(
 			"
 				$( 'button.add_attribute' ).on( 'click', function() {
 					window.wcTracks.recordEvent( 'product_attribute_add', { source: 'product-edit' } );
+				} );
+				$( 'button.save_attributes' ).on( 'click', function() {
+					window.wcTracks.recordEvent( 'product_attribute_edit', { source: 'product-edit' } );
 				} );
 			"
 		);
@@ -53,7 +56,7 @@ class WC_Products_Tracking {
 	 */
 	public function track_product_edit() {
 		if ( ! empty( $_GET['post'] ) && 'product' === get_post_type( $_GET['post'] ) ) {
-			$this->track_add_attribute_client();
+			$this->track_attributes_client();
 		}
 	}
 
@@ -63,7 +66,7 @@ class WC_Products_Tracking {
 	public function track_product_add_start() {
 		if ( isset( $_GET['post_type'] ) && 'product' === wc_clean( wp_unslash( $_GET['post_type'] ) ) ) { // phpcs:ignore WordPress.Security.NonceVerification.NoNonceVerification, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 			WC_Tracks::record_event( 'product_add_start' );
-			$this->track_add_attribute_client();
+			$this->track_attributes_client();
 		}
 	}
 
