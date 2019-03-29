@@ -27,9 +27,12 @@ class WC_Products_Tracking {
 	 * Send a Tracks event when an attribute is added from the product management section.
 	 */
 	public function track_add_attribute_product_management() {
-		WC_Tracks::record_event( 'product_attribute_add', array(
-			'source' => 'product-management',
-		) );
+		WC_Tracks::record_event(
+			'product_attribute_add',
+			array(
+				'source' => 'product-management',
+			)
+		);
 	}
 
 	/**
